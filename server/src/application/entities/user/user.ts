@@ -23,7 +23,10 @@ export class User {
       this._id = randomUUID();
     }
 
-    this.props = { ...props, createdAt: props.createdAt ?? new Date() };
+    this.props = {
+      ...props,
+      createdAt: props.createdAt ?? new Date(),
+    };
   }
 
   public get id(): string {

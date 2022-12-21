@@ -1,7 +1,6 @@
 import { User } from 'src/application/entities/user/user';
 import { UserRepository } from '../../../../application/repositories/user-repository';
 import { PrismaService } from '../prisma.service';
-import { UserNotFound } from '../../../../application/use-cases/errors/user-not-found';
 import { PrismaUserMapper } from '../mappers/prisma-user-mapper';
 import { Injectable } from '@nestjs/common';
 
@@ -9,7 +8,7 @@ import { Injectable } from '@nestjs/common';
 export class PrismaUserRepository implements UserRepository {
   constructor(private prismaService: PrismaService) {}
 
-  async findByEmail(email: string): Promise<User> {
+  async findByEmail(email: string): Promise<User | null> {
     const user = await this.prismaService.user.findUnique({
       where: {
         email,
@@ -17,7 +16,7 @@ export class PrismaUserRepository implements UserRepository {
     });
 
     if (!user) {
-      throw new UserNotFound();
+      return null;
     }
 
     return PrismaUserMapper.toDomain(user);

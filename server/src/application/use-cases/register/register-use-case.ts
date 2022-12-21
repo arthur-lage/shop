@@ -1,8 +1,8 @@
-import { UserRepository } from '../repositories/user-repository';
-import { User } from '../entities/user/user';
-import * as argon2 from 'argon2';
+import { UserRepository } from '../../repositories/user-repository';
+import { User } from '../../entities/user/user';
 import { Injectable } from '@nestjs/common';
-import { EmailAlreadyBeingUsed } from './errors/email-already-being-used';
+import { EmailAlreadyBeingUsed } from '../errors/email-already-being-used';
+import * as argon2 from 'argon2';
 
 interface RegisterUseCaseRequest {
   name: string;
@@ -39,7 +39,7 @@ export class RegisterUseCase {
 
     await this.userRepository.create(user);
 
-    const token = await argon2.hash('registrado');
+    const token = 'token';
 
     return {
       token,
