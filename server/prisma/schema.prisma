@@ -17,3 +17,12 @@ model User {
   password  String
   createdAt DateTime @default(now())
 }
+
+model Product {
+  id          String   @id
+  title       String
+  description String
+  imageURL    String
+  price       Float
+  createdAt   DateTime @default(now())
+}

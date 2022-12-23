@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 
 import * as argon2 from 'argon2';
 
-import { UserNotFound } from '../errors/user-not-found';
-import { InvalidCredentials } from '../errors/invalid-credentials';
-import { UserRepository } from '../../repositories/user-repository';
+import { UserNotFound } from '../../errors/user-not-found';
+import { InvalidCredentials } from '../../errors/invalid-credentials';
+import { UserRepository } from '../../../repositories/user-repository';
 
 interface LoginUseCaseRequest {
   email: string;

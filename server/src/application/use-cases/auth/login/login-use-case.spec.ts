@@ -1,8 +1,8 @@
 import { LoginUseCase } from './login-use-case';
-import { InMemoryUserRepository } from '../../../../test/repositories/in-memory-user-repository';
-import { UserNotFound } from '../errors/user-not-found';
-import { RegisterUseCase } from '../register/register-use-case';
-import { InvalidCredentials } from '../errors/invalid-credentials';
+import { InMemoryUserRepository } from '../../../../../test/repositories/in-memory-user-repository';
+import { UserNotFound } from '../../errors/user-not-found';
+import { RegisterUseCase } from '../../register/register-use-case';
+import { InvalidCredentials } from '../../errors/invalid-credentials';
 
 describe('Login', () => {
   it('should be able to login an existing user', async () => {
