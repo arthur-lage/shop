@@ -61,7 +61,7 @@ export class ProductController {
     });
   }
 
-  @Patch('/:id')
+  @Patch('/:productId')
   async update(
     @Param('productId') productId: string,
     @Body() body: UpdateProductDTO,
@@ -86,7 +86,7 @@ export class ProductController {
     await this.deleteAllProductsUseCase.execute();
   }
 
-  @Delete('/:id')
+  @Delete('/:productId')
   async deleteById(@Param('productId') productId: string) {
     await this.deleteProductByIdUseCase.execute({
       productId,

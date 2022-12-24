@@ -6,6 +6,8 @@ import { ProductRepository } from '../../application/repositories/product-reposi
 
 import { PrismaUserRepository } from './prisma/repositories/user-repository';
 import { PrismaProductRepository } from './prisma/repositories/product-repository';
+import { PrismaCartRepository } from './prisma/repositories/cart-repository';
+import { CartRepository } from 'src/application/repositories/cart-repository';
 
 @Module({
   providers: [
@@ -18,7 +20,11 @@ import { PrismaProductRepository } from './prisma/repositories/product-repositor
       provide: ProductRepository,
       useClass: PrismaProductRepository,
     },
+    {
+      provide: CartRepository,
+      useClass: PrismaCartRepository,
+    },
   ],
-  exports: [UserRepository, ProductRepository],
+  exports: [UserRepository, ProductRepository, CartRepository],
 })
 export class DatabaseModule {}
