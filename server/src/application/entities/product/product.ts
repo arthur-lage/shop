@@ -59,4 +59,8 @@ export class Product {
   public set price(newPrice: number) {
     this.props.price = newPrice;
   }
+
+  public get createdAt(): Date {
+    return this.props.createdAt;
+  }
 }

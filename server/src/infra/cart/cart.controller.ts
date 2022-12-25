@@ -17,13 +17,13 @@ export class CartController {
   ) {}
 
   @Get('/user')
-  async getUserCart(userId: string) {
-    const cart = await this.getUserCartUseCase.execute({
+  async getUserCart(userId: string): Promise<any> {
+    const products = await this.getUserCartUseCase.execute({
       userId,
     });
 
     return {
-      cart,
+      products,
     };
   }
 

@@ -5,6 +5,7 @@ import * as argon2 from 'argon2';
 import { UserNotFound } from '../../errors/user-not-found';
 import { InvalidCredentials } from '../../errors/invalid-credentials';
 import { UserRepository } from '../../../repositories/user-repository';
+import { AuthService } from '../../../../infra/auth/auth.service';
 
 interface LoginUseCaseRequest {
   email: string;
@@ -17,7 +18,10 @@ interface LoginUseCaseResponse {
 
 @Injectable()
 export class LoginUseCase {
-  constructor(private userRepository: UserRepository) {}
+  constructor(
+    private userRepository: UserRepository,
+    private authService: AuthService,
+  ) {}
 
   async execute({
     email,
@@ -35,8 +39,12 @@ export class LoginUseCase {
       throw new InvalidCredentials();
     }
 
-    const token = 'token';
+    const { token } = await this.authService.signToken(
+      user.id,
+      user.email,
+      user.name,
+    );
 
-    return { token };
+    return { token: JSON.stringify({ token: token }) };
   }
 }

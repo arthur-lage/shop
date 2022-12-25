@@ -3,6 +3,7 @@ import { User } from '../../../entities/user/user';
 import { Injectable } from '@nestjs/common';
 import { EmailAlreadyBeingUsed } from '../../errors/email-already-being-used';
 import * as argon2 from 'argon2';
+import { AuthService } from '../../../../infra/auth/auth.service';
 
 interface RegisterUseCaseRequest {
   name: string;
@@ -16,7 +17,10 @@ interface RegisterUseCaseResponse {
 
 @Injectable()
 export class RegisterUseCase {
-  constructor(private userRepository: UserRepository) {}
+  constructor(
+    private userRepository: UserRepository,
+    private authService: AuthService,
+  ) {}
 
   async execute(
     request: RegisterUseCaseRequest,
@@ -39,7 +43,11 @@ export class RegisterUseCase {
 
     await this.userRepository.create(user);
 
-    const token = 'token';
+    const { token } = await this.authService.signToken(
+      user.id,
+      user.email,
+      user.name,
+    );
 
     return {
       token,

@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CartRepository } from 'src/application/repositories/cart-repository';
-import { Product } from 'src/application/entities/product/product';
 import { Cart } from 'src/application/entities/cart/cart';
 import { PrismaCartMapper } from '../mappers/prisma-cart-mapper';
 
@@ -14,7 +13,19 @@ export class PrismaCartRepository implements CartRepository {
       where: {
         userId,
       },
+      include: {
+        products: true,
+      },
     });
+
+    return PrismaCartMapper.toDomain(
+      {
+        id: cart.id,
+        createdAt: cart.createdAt,
+        userId: cart.userId,
+      },
+      cart.products,
+    );
   }
 
   async addProductToCart(userId: string, productId: string): Promise<void> {
@@ -33,22 +44,9 @@ export class PrismaCartRepository implements CartRepository {
       },
     });
 
-    let newProducts = cart.products;
+    cart.products.push(product);
 
-    newProducts.push(product);
-
-    newProducts = newProducts.map((currentProduct) =>
-      PrismaCartMapper.toPrisma(currentProduct),
-    );
-
-    await this.prismaService.cart.update({
-      where: {
-        userId,
-      },
-      data: {
-        products: newProducts,
-      },
-    });
+    console.table(cart.products);
   }
 
   async clearCart(userId: string): Promise<void> {
