@@ -2,10 +2,10 @@ import { Body, Controller, Delete, Get, Post } from '@nestjs/common';
 import { RemoveProductFromCartDTO } from './dtos/remove-product-from-cart.sto';
 import { AddProductToCartDTO } from './dtos/add-product-to-cart.dto';
 
-import { GetUserCartUseCase } from '../../application/use-cases/get-user-cart-use-case';
-import { AddProductToCartUseCase } from '../../application/use-cases/add-product-to-cart-use-case';
-import { RemoveProductFromCartUseCase } from '../../application/use-cases/remove-product-from-cart-use-case';
-import { ClearCartUseCase } from '../../application/use-cases/clear-cart-use-case';
+import { GetUserCartUseCase } from '../../application/use-cases/cart/get-user-cart/get-user-cart-use-case';
+import { AddProductToCartUseCase } from '../../application/use-cases/cart/add-product-to-cart/add-product-to-cart-use-case';
+import { RemoveProductFromCartUseCase } from '../../application/use-cases/cart/remove-product-from-cart/remove-product-from-cart-use-case';
+import { ClearCartUseCase } from '../../application/use-cases/cart/clear-cart/clear-cart-use-case';
 
 @Controller('cart')
 export class CartController {
@@ -18,7 +18,9 @@ export class CartController {
 
   @Get('/user')
   async getUserCart(userId: string) {
-    const { cart } = await this.getUserCartUseCase.execute(userId);
+    const cart = await this.getUserCartUseCase.execute({
+      userId,
+    });
 
     return {
       cart,

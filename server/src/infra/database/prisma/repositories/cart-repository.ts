@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma.service';
 import { CartRepository } from 'src/application/repositories/cart-repository';
 import { Product } from 'src/application/entities/product/product';
 import { Cart } from 'src/application/entities/cart/cart';
+import { PrismaCartMapper } from '../mappers/prisma-cart-mapper';
 
 @Injectable()
 export class PrismaCartRepository implements CartRepository {
@@ -14,43 +15,52 @@ export class PrismaCartRepository implements CartRepository {
         userId,
       },
     });
-
-    return cart;
   }
 
-  async addProductToCart(userId: string, product: Product): Promise<void> {
+  async addProductToCart(userId: string, productId: string): Promise<void> {
+    const product = await this.prismaService.product.findUnique({
+      where: {
+        id: productId,
+      },
+    });
+
     const cart = await this.prismaService.cart.findUnique({
       where: {
         userId,
       },
+      include: {
+        products: true,
+      },
     });
 
-    const newCart = new Cart({
-      products: cart.products.push(product),
-      id: cart.id,
-      createdAt: cart.createdAt,
-    });
+    let newProducts = cart.products;
+
+    newProducts.push(product);
+
+    newProducts = newProducts.map((currentProduct) =>
+      PrismaCartMapper.toPrisma(currentProduct),
+    );
 
     await this.prismaService.cart.update({
       where: {
         userId,
       },
-      data: newCart,
+      data: {
+        products: newProducts,
+      },
     });
   }
 
-  async clearCart(cart: Cart): Promise<void> {
-    const newCart = new Cart({
-      products: [],
-      id: cart.id,
-      createdAt: cart.createdAt,
-    });
-
+  async clearCart(userId: string): Promise<void> {
     await this.prismaService.cart.update({
       where: {
-        id: cart.id,
+        userId,
       },
-      data: newCart,
+      data: {
+        products: {
+          deleteMany: {},
+        },
+      },
     });
   }
 
@@ -58,23 +68,15 @@ export class PrismaCartRepository implements CartRepository {
     userId: string,
     productId: string,
   ): Promise<void> {
-    const cart = await this.getUserCart(userId);
-
-    const filteredProducts = cart.products.filter(
-      (product) => product.id !== productId,
-    );
-
-    const newCart = new Cart({
-      products: filteredProducts,
-      id: cart.id,
-      createdAt: cart.createdAt,
-    });
-
     await this.prismaService.cart.update({
       where: {
-        id: cart.id,
+        userId,
       },
-      data: newCart,
+      data: {
+        products: {
+          deleteMany: [{ id: productId }],
+        },
+      },
     });
   }
 }

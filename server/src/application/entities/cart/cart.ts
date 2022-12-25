@@ -6,6 +6,7 @@ interface CartProps {
   id?: string;
   products: Product[];
   createdAt: Date;
+  userId: string;
 }
 
 export class Cart {
@@ -35,6 +36,14 @@ export class Cart {
 
   public set products(newProducts: Product[]) {
     this.props.products = newProducts;
+  }
+
+  public get createdAt(): Date {
+    return this.props.createdAt;
+  }
+
+  public get userId(): string {
+    return this.props.userId;
   }
 
   public addProduct(newProduct: Product) {
