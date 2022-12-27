@@ -1,12 +1,22 @@
-import { Body, Controller, Delete, Get, Post } from '@nestjs/common';
-import { RemoveProductFromCartDTO } from './dtos/remove-product-from-cart.sto';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { AddProductToCartDTO } from './dtos/add-product-to-cart.dto';
 
 import { GetUserCartUseCase } from '../../application/use-cases/cart/get-user-cart/get-user-cart-use-case';
 import { AddProductToCartUseCase } from '../../application/use-cases/cart/add-product-to-cart/add-product-to-cart-use-case';
 import { RemoveProductFromCartUseCase } from '../../application/use-cases/cart/remove-product-from-cart/remove-product-from-cart-use-case';
 import { ClearCartUseCase } from '../../application/use-cases/cart/clear-cart/clear-cart-use-case';
+import { GetUser } from '../auth/get-user.decorator';
+import { JwtGuard } from '../auth/auth.guard';
 
+@UseGuards(JwtGuard)
 @Controller('cart')
 export class CartController {
   constructor(
@@ -17,8 +27,8 @@ export class CartController {
   ) {}
 
   @Get('/user')
-  async getUserCart(userId: string): Promise<any> {
-    const products = await this.getUserCartUseCase.execute({
+  async getUserCart(@GetUser('id') userId: string): Promise<any> {
+    const { products } = await this.getUserCartUseCase.execute({
       userId,
     });
 
@@ -28,8 +38,10 @@ export class CartController {
   }
 
   @Post('/new-product')
-  async addProductToCart(@Body() body: AddProductToCartDTO) {
-    const userId = '123123123';
+  async addProductToCart(
+    @GetUser('id') userId: string,
+    @Body() body: AddProductToCartDTO,
+  ) {
     const { productId } = body;
 
     await this.addProductToCartUseCase.execute({
@@ -39,18 +51,17 @@ export class CartController {
   }
 
   @Delete('/clear')
-  async clearCart() {
-    const userId = '123123';
-
+  async clearCart(@GetUser('id') userId: string) {
     await this.clearCartUseCase.execute({
       userId,
     });
   }
 
-  async removeProductFromCart(@Body() body: RemoveProductFromCartDTO) {
-    const userId = '123123';
-    const { productId } = body;
-
+  @Delete('/:productId')
+  async removeProductFromCart(
+    @GetUser('id') userId: string,
+    @Param('productId') productId: string,
+  ) {
     await this.removeProductFromCartUseCase.execute({
       userId,
       productId,

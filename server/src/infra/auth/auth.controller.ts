@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { LoginDTO } from './dtos/login.dto';
 import { LoginUseCase } from 'src/application/use-cases/auth/login/login-use-case';
 import { RegisterDTO } from './dtos/register.dto';
@@ -13,6 +13,7 @@ export class AuthController {
     private authService: AuthService,
   ) {}
 
+  @HttpCode(HttpStatus.OK)
   @Post('login')
   async login(@Body() body: LoginDTO) {
     const { email, password } = body;
@@ -25,6 +26,7 @@ export class AuthController {
     return token;
   }
 
+  @HttpCode(HttpStatus.CREATED)
   @Post('register')
   async register(@Body() body: RegisterDTO) {
     const { name, email, password } = body;

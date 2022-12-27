@@ -1,4 +1,5 @@
 import { CartRepository } from 'src/application/repositories/cart-repository';
+import { Injectable } from '@nestjs/common';
 
 interface AddProductToCartUseCaseRequest {
   productId: string;
@@ -6,6 +7,7 @@ interface AddProductToCartUseCaseRequest {
 }
 type AddProductToCartUseCaseResponse = void;
 
+@Injectable()
 export class AddProductToCartUseCase {
   constructor(private cartRepository: CartRepository) {}
 

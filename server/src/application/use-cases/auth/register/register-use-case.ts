@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { EmailAlreadyBeingUsed } from '../../errors/email-already-being-used';
 import * as argon2 from 'argon2';
 import { AuthService } from '../../../../infra/auth/auth.service';
+import { CartRepository } from '../../../repositories/cart-repository';
 
 interface RegisterUseCaseRequest {
   name: string;
@@ -20,6 +21,7 @@ export class RegisterUseCase {
   constructor(
     private userRepository: UserRepository,
     private authService: AuthService,
+    private cartRepository: CartRepository,
   ) {}
 
   async execute(
@@ -42,6 +44,8 @@ export class RegisterUseCase {
     });
 
     await this.userRepository.create(user);
+
+    await this.cartRepository.create(user.id);
 
     const { token } = await this.authService.signToken(
       user.id,

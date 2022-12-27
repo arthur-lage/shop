@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CartRepository } from 'src/application/repositories/cart-repository';
 import { Cart } from 'src/application/entities/cart/cart';
@@ -18,6 +18,12 @@ export class PrismaCartRepository implements CartRepository {
       },
     });
 
+    if (!cart) {
+      throw new BadRequestException("Could not find user's cart");
+    }
+
+    console.log(cart);
+
     return PrismaCartMapper.toDomain(
       {
         id: cart.id,
@@ -26,6 +32,21 @@ export class PrismaCartRepository implements CartRepository {
       },
       cart.products,
     );
+  }
+
+  async create(userId: string): Promise<void> {
+    const newCart = new Cart({
+      products: [],
+      userId,
+    });
+
+    await this.prismaService.cart.create({
+      data: {
+        id: newCart.id,
+        createdAt: newCart.createdAt,
+        userId: newCart.userId,
+      },
+    });
   }
 
   async addProductToCart(userId: string, productId: string): Promise<void> {
@@ -46,7 +67,14 @@ export class PrismaCartRepository implements CartRepository {
 
     cart.products.push(product);
 
-    console.table(cart.products);
+    await this.prismaService.product.update({
+      where: {
+        id: product.id,
+      },
+      data: {
+        cartId: cart.id,
+      },
+    });
   }
 
   async clearCart(userId: string): Promise<void> {
